@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import axios from "axios";
 import fs from "fs";
 import { parse } from "csv-parse";
-import { WALLETADDRESS_LIST, CSV_FIELDS } from "./const.js";
+import { WHITELIST, CSV_FIELDS } from "./const.js";
 import supabase from "./db/supabase.js";
 import dotenv from "dotenv";
 dotenv.config();
@@ -21,7 +21,6 @@ const isTxDataValidate = async (
 
   if (transaction) {
     const fromWalletAddress = transaction.from;
-    const toWalletAddress = transaction.to;
     const transferValue = transaction.value;
     const chainID = transaction.chainId;
 
@@ -66,7 +65,7 @@ const isTxMined = async (provider, txHash) => {
 };
 
 const isProvided = async (provider, toWalletAddress) => {
-  const lowerCaseWalletAddresses = WALLETADDRESS_LIST.map((address) =>
+  const lowerCaseWalletAddresses = WHITELIST.map((address) =>
     address.toLowerCase()
   );
   const lowerCaseToWalletAddress = toWalletAddress.toLowerCase();
@@ -81,25 +80,22 @@ const isProvided = async (provider, toWalletAddress) => {
 const saveTransaction = async (newTx, referee) => {
   try {
     const { data } = await supabase.from("presale").insert(newTx).select();
-    const res1 = await supabase.rpc("increase_sold_token", {
+    await supabase.rpc("increase_sold_token", {
       x: newTx.presaleTokenAmount,
       row_id: 0,
     });
-    // console.log(res1);
-    const res2 = await supabase.rpc("increase_user_alloc", {
+    await supabase.rpc("increase_user_alloc", {
       x: newTx.presaleTokenAmount,
       user_addr: newTx.walletAddress,
       invited_by: referee,
     });
-    // console.log(res2);
     return data;
   } catch (error) {
     console.error(error);
   }
 };
 
-const setProvider = (chainID) => {
-  //we set the Polygon Mumbai Provider for test
+const setProvider = () => {
   try {
     let provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
     return provider;
@@ -243,7 +239,6 @@ const confirmAndSaveTx = async (
   vestingPeriod
 ) => {
   try {
-    // console.log("tx confirming");
     const provider = setProvider(chainId);
     const transaction = await provider.getTransaction(txHash);
     const toWalletAddress = transaction.to;
@@ -300,11 +295,8 @@ const confirmAndSaveTx = async (
           transactionHash: txHash,
           vesting: vestingPeriod,
         };
-        const data = await saveTransaction(newRecord, trueReferee);
+        await saveTransaction(newRecord, trueReferee);
         return "success";
-        // return data;
-        //     // console.log(newRecord);
-        //     // return newRecord;
       }
     } else {
       return {};

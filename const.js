@@ -1,4 +1,4 @@
-export const WALLETADDRESS_LIST = [
+export const WHITELIST = [
   // Our smart contracts and multisigs
   "0x8D58a40977E1f40FfAf383511046BC72047c8de9",
   "0xA648572567D194921b9915A325201998ca8eAA7e",
