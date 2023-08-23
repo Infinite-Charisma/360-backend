@@ -1,0 +1,27 @@
+{
+  "name": "presale",
+  "version": "1.0.0",
+  "description": "Backend for Presale 360 token",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Adam",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.31.0",
+    "axios": "^1.4.0",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "csv-parse": "^5.4.0",
+    "dotenv": "^16.3.1",
+    "ethers": "^5.7.0",
+    "express": "^4.18.2",
+    "fs": "^0.0.1-security",
+    "json-loader": "^0.5.7",
+    "nodemon": "^3.0.1",
+    "supabase": "^1.82.6"
+  }
+}
